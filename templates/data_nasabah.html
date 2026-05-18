@@ -1,0 +1,375 @@
+{% extends "base.html" %}
+{% block title %}Data Nasabah – SPK Kredit Usaha Mikro{% endblock %}
+
+{% block extra_head %}
+<style>
+  .customer-id-badge {
+    font-family: 'Sora', sans-serif;
+    font-size: 0.78rem;
+    font-weight: 700;
+    background: var(--primary-light);
+    color: var(--primary);
+    padding: 3px 10px;
+    border-radius: 100px;
+    letter-spacing: .03em;
+  }
+  .credit-badge {
+    font-size: 0.78rem;
+    font-weight: 600;
+    padding: 3px 10px;
+    border-radius: 100px;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+  }
+  .credit-good { background: #dcfce7; color: #15803d; }
+  .credit-bad  { background: #fee2e2; color: #b91c1c; }
+
+  .action-btn {
+    border: none;
+    background: transparent;
+    width: 32px; height: 32px;
+    border-radius: var(--radius-sm);
+    display: inline-flex; align-items: center; justify-content: center;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: background .12s, color .12s;
+  }
+  .action-btn.edit  { color: var(--primary); }
+  .action-btn.edit:hover  { background: var(--primary-light); }
+  .action-btn.del   { color: var(--danger);  }
+  .action-btn.del:hover   { background: #fee2e2; }
+
+  /* Modal tweaks */
+  .modal-header {
+    background: linear-gradient(135deg, var(--primary), var(--accent));
+    color: #fff;
+    border-bottom: none;
+    border-radius: 12px 12px 0 0;
+    padding: 1.1rem 1.5rem;
+  }
+  .modal-header .btn-close { filter: invert(1); }
+  .modal-title { font-family: 'Sora', sans-serif; font-weight: 700; font-size: 1rem; }
+  .modal-content { border-radius: 12px; border: none; box-shadow: var(--shadow-lg); }
+  .modal-body { padding: 1.5rem; }
+  .modal-footer { padding: .9rem 1.5rem; border-top: 1px solid var(--border); }
+
+  .form-label {
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+    margin-bottom: 5px;
+  }
+  .form-control, .form-select {
+    border-radius: var(--radius-sm);
+    border: 1.5px solid var(--border);
+    font-size: 0.9rem;
+    padding: 8px 12px;
+    transition: border-color .15s, box-shadow .15s;
+  }
+  .form-control:focus, .form-select:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(37,99,235,.12);
+  }
+  .input-group-text {
+    background: var(--surface-2);
+    border: 1.5px solid var(--border);
+    color: var(--text-muted);
+    font-size: 0.82rem;
+  }
+
+  /* Empty state */
+  .empty-state {
+    text-align: center;
+    padding: 3.5rem 1rem;
+    color: var(--text-muted);
+  }
+  .empty-state i { font-size: 3rem; margin-bottom: .75rem; display: block; opacity: .4; }
+  .empty-state p { margin: 0; font-size: 0.9rem; }
+
+  /* Search box */
+  .search-box {
+    position: relative;
+    max-width: 260px;
+  }
+  .search-box i {
+    position: absolute;
+    left: 11px; top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-muted);
+    font-size: .9rem;
+    pointer-events: none;
+  }
+  .search-box input {
+    padding-left: 32px;
+    font-size: 0.875rem;
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+
+  <!-- Page Header -->
+  <div class="page-header d-flex align-items-start justify-content-between flex-wrap gap-3">
+    <div>
+      <div class="breadcrumb-pill"><i class="bi bi-people"></i>Manajemen Data</div>
+      <h1>Data Nasabah</h1>
+      <p>Kelola data calon penerima kredit usaha mikro — tambah, edit, dan hapus.</p>
+    </div>
+    <button class="btn btn-primary d-flex align-items-center gap-2"
+            data-bs-toggle="modal" data-bs-target="#addModal">
+      <i class="bi bi-plus-lg"></i>Tambah Nasabah
+    </button>
+  </div>
+
+  <!-- Table Card -->
+  <div class="card">
+    <!-- Card Header with search -->
+    <div class="card-header-custom">
+      <h5><i class="bi bi-table me-2 text-primary-custom"></i>
+        Daftar Nasabah
+        <span class="badge ms-1" style="background:var(--primary-light);color:var(--primary);font-size:.72rem;font-weight:700;border-radius:100px;padding:3px 10px;">
+          {{ nasabah_list|length }}
+        </span>
+      </h5>
+      <div class="search-box">
+        <i class="bi bi-search"></i>
+        <input type="text" id="searchInput" class="form-control form-control-sm"
+               placeholder="Cari nasabah…">
+      </div>
+    </div>
+
+    <!-- Table -->
+    <div class="table-responsive">
+      {% if nasabah_list %}
+      <table class="table-custom w-100" id="nasabahTable">
+        <thead>
+          <tr>
+            <th>No</th>
+            <th>ID</th>
+            <th>Nama Nasabah</th>
+            <th>Pend. Pemohon (Rp)</th>
+            <th>Pend. Co-pemohon (Rp)</th>
+            <th>Riwayat Kredit</th>
+            <th>Jml. Pinjaman (Jt)</th>
+            <th>Tanggungan</th>
+            <th style="text-align:center">Aksi</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for n in nasabah_list %}
+          <tr>
+            <td style="color:var(--text-muted);font-size:.82rem">{{ loop.index }}</td>
+            <td><span class="customer-id-badge">{{ n.customer_id }}</span></td>
+            <td>
+              <div style="font-weight:600">{{ n.name }}</div>
+            </td>
+            <td>{{ "{:,.0f}".format(n.applicant_income) }}</td>
+            <td>{{ "{:,.0f}".format(n.coapplicant_income) }}</td>
+            <td>
+              {% if n.credit_history == 1 %}
+                <span class="credit-badge credit-good"><i class="bi bi-check-circle-fill"></i>Baik</span>
+              {% else %}
+                <span class="credit-badge credit-bad"><i class="bi bi-x-circle-fill"></i>Buruk</span>
+              {% endif %}
+            </td>
+            <td>{{ "{:,.0f}".format(n.loan_amount) }}</td>
+            <td>{{ n.dependents }}</td>
+            <td style="text-align:center">
+              <!-- Edit trigger -->
+              <button class="action-btn edit"
+                      title="Edit"
+                      data-bs-toggle="modal"
+                      data-bs-target="#editModal"
+                      data-id="{{ n.id }}"
+                      data-name="{{ n.name }}"
+                      data-app-income="{{ n.applicant_income }}"
+                      data-coapp-income="{{ n.coapplicant_income }}"
+                      data-credit="{{ n.credit_history }}"
+                      data-loan="{{ n.loan_amount }}"
+                      data-dep="{{ n.dependents }}">
+                <i class="bi bi-pencil-square"></i>
+              </button>
+
+              <!-- Delete form -->
+              <form action="{{ url_for('delete_nasabah', id=n.id) }}"
+                    method="GET"
+                    class="d-inline"
+                    onsubmit="return confirmDelete('{{ n.name }}')">
+                <button type="submit" class="action-btn del" title="Hapus">
+                  <i class="bi bi-trash3"></i>
+                </button>
+              </form>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      {% else %}
+      <div class="empty-state">
+        <i class="bi bi-inbox"></i>
+        <p>Belum ada data nasabah. Klik <strong>Tambah Nasabah</strong> untuk memulai.</p>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+
+</div><!-- /container -->
+
+
+<!-- ══════════════════════════════════════════════════
+     MODAL: Tambah Nasabah
+══════════════════════════════════════════════════ -->
+<div class="modal fade" id="addModal" tabindex="-1">
+  <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+    <div class="modal-content">
+      <div class="modal-header">
+        <span class="modal-title"><i class="bi bi-person-plus-fill me-2"></i>Tambah Data Nasabah</span>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <form method="POST" action="{{ url_for('add_nasabah') }}">
+        <div class="modal-body">
+          <div class="row g-3">
+            <div class="col-12">
+              <label class="form-label">Nama Lengkap Nasabah <span class="text-danger">*</span></label>
+              <input type="text" name="name" class="form-control" placeholder="Masukkan nama lengkap" required>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Pendapatan Pemohon</label>
+              <div class="input-group">
+                <span class="input-group-text">Rp</span>
+                <input type="number" name="applicant_income" class="form-control" min="0" step="any" value="0">
+              </div>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Pendapatan Co-Pemohon</label>
+              <div class="input-group">
+                <span class="input-group-text">Rp</span>
+                <input type="number" name="coapplicant_income" class="form-control" min="0" step="any" value="0">
+              </div>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Jumlah Pinjaman</label>
+              <div class="input-group">
+                <span class="input-group-text">Jt</span>
+                <input type="number" name="loan_amount" class="form-control" min="0" step="any" value="0">
+              </div>
+            </div>
+            <div class="col-md-3">
+              <label class="form-label">Riwayat Kredit</label>
+              <select name="credit_history" class="form-select">
+                <option value="1">1 — Baik</option>
+                <option value="0">0 — Buruk</option>
+              </select>
+            </div>
+            <div class="col-md-3">
+              <label class="form-label">Jumlah Tanggungan</label>
+              <input type="number" name="dependents" class="form-control" min="0" value="0">
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-light" data-bs-dismiss="modal">Batal</button>
+          <button type="submit" class="btn btn-primary">
+            <i class="bi bi-save me-1"></i>Simpan Data
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════════════════════
+     MODAL: Edit Nasabah
+══════════════════════════════════════════════════ -->
+<div class="modal fade" id="editModal" tabindex="-1">
+  <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+    <div class="modal-content">
+      <div class="modal-header">
+        <span class="modal-title"><i class="bi bi-pencil-square me-2"></i>Edit Data Nasabah</span>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <form method="POST" id="editForm" action="">
+        <div class="modal-body">
+          <div class="row g-3">
+            <div class="col-12">
+              <label class="form-label">Nama Lengkap Nasabah <span class="text-danger">*</span></label>
+              <input type="text" name="name" id="edit_name" class="form-control" required>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Pendapatan Pemohon</label>
+              <div class="input-group">
+                <span class="input-group-text">Rp</span>
+                <input type="number" name="applicant_income" id="edit_app_income" class="form-control" min="0" step="any">
+              </div>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Pendapatan Co-Pemohon</label>
+              <div class="input-group">
+                <span class="input-group-text">Rp</span>
+                <input type="number" name="coapplicant_income" id="edit_coapp_income" class="form-control" min="0" step="any">
+              </div>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Jumlah Pinjaman</label>
+              <div class="input-group">
+                <span class="input-group-text">Jt</span>
+                <input type="number" name="loan_amount" id="edit_loan" class="form-control" min="0" step="any">
+              </div>
+            </div>
+            <div class="col-md-3">
+              <label class="form-label">Riwayat Kredit</label>
+              <select name="credit_history" id="edit_credit" class="form-select">
+                <option value="1">1 — Baik</option>
+                <option value="0">0 — Buruk</option>
+              </select>
+            </div>
+            <div class="col-md-3">
+              <label class="form-label">Jumlah Tanggungan</label>
+              <input type="number" name="dependents" id="edit_dep" class="form-control" min="0">
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-light" data-bs-dismiss="modal">Batal</button>
+          <button type="submit" class="btn btn-primary">
+            <i class="bi bi-check2-circle me-1"></i>Perbarui Data
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+  /* ── Populate Edit Modal ── */
+  document.getElementById('editModal').addEventListener('show.bs.modal', function (e) {
+    const btn = e.relatedTarget;
+    document.getElementById('editForm').action = `/nasabah/edit/${btn.dataset.id}`;
+    document.getElementById('edit_name').value        = btn.dataset.name;
+    document.getElementById('edit_app_income').value  = btn.dataset.appIncome;
+    document.getElementById('edit_coapp_income').value= btn.dataset.coapIncome;
+    document.getElementById('edit_credit').value      = btn.dataset.credit;
+    document.getElementById('edit_loan').value        = btn.dataset.loan;
+    document.getElementById('edit_dep').value         = btn.dataset.dep;
+  });
+
+  /* ── Delete Confirmation ── */
+  function confirmDelete(name) {
+    return confirm(`Yakin ingin menghapus data nasabah "${name}"?\nTindakan ini tidak dapat dibatalkan.`);
+  }
+
+  /* ── Live Search ── */
+  document.getElementById('searchInput').addEventListener('input', function () {
+    const q = this.value.toLowerCase();
+    document.querySelectorAll('#nasabahTable tbody tr').forEach(row => {
+      row.style.display = row.textContent.toLowerCase().includes(q) ? '' : 'none';
+    });
+  });
+</script>
+{% endblock %}

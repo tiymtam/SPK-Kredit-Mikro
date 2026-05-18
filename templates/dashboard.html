@@ -1,0 +1,464 @@
+{% extends "base.html" %}
+{% block title %}Dashboard – SPK Kredit Usaha Mikro{% endblock %}
+
+{% block extra_head %}
+<style>
+  /* ── Hero Section ── */
+  .hero {
+    background: linear-gradient(135deg, #1e40af 0%, #0ea5e9 60%, #38bdf8 100%);
+    color: #fff;
+    padding: 5rem 0 4rem;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(ellipse at 80% 20%, rgba(255,255,255,.10) 0%, transparent 55%),
+      radial-gradient(ellipse at 10% 80%, rgba(255,255,255,.08) 0%, transparent 55%);
+  }
+  .hero-content { position: relative; z-index: 1; }
+  .hero-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(255,255,255,.18);
+    border: 1px solid rgba(255,255,255,.30);
+    color: #fff;
+    font-size: 0.78rem;
+    font-weight: 600;
+    padding: 5px 14px;
+    border-radius: 100px;
+    margin-bottom: 1.2rem;
+    backdrop-filter: blur(6px);
+    font-family: 'Sora', sans-serif;
+    letter-spacing: .04em;
+    text-transform: uppercase;
+  }
+  .hero h1 {
+    font-size: clamp(1.9rem, 4vw, 2.8rem);
+    font-weight: 800;
+    line-height: 1.15;
+    margin-bottom: 1.1rem;
+  }
+  .hero h1 span {
+    background: linear-gradient(90deg, #bfdbfe, #e0f2fe);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .hero p {
+    font-size: 1.05rem;
+    opacity: .88;
+    max-width: 600px;
+    margin-bottom: 2rem;
+    line-height: 1.7;
+  }
+  .hero-actions { display: flex; gap: 12px; flex-wrap: wrap; }
+  .btn-hero-primary {
+    background: #fff;
+    color: var(--primary);
+    font-weight: 600;
+    border: none;
+    padding: 10px 22px;
+    border-radius: var(--radius-sm);
+    font-size: 0.9rem;
+    display: inline-flex; align-items: center; gap: 7px;
+    transition: transform .15s, box-shadow .15s;
+    text-decoration: none;
+  }
+  .btn-hero-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(0,0,0,.18);
+    color: var(--primary-dark);
+  }
+  .btn-hero-secondary {
+    background: rgba(255,255,255,.15);
+    color: #fff;
+    font-weight: 600;
+    border: 1px solid rgba(255,255,255,.40);
+    padding: 10px 22px;
+    border-radius: var(--radius-sm);
+    font-size: 0.9rem;
+    display: inline-flex; align-items: center; gap: 7px;
+    backdrop-filter: blur(4px);
+    transition: background .15s;
+    text-decoration: none;
+  }
+  .btn-hero-secondary:hover { background: rgba(255,255,255,.25); color: #fff; }
+
+  /* Hero decorative art */
+  .hero-art {
+    position: absolute;
+    right: -40px; top: 50%;
+    transform: translateY(-50%);
+    width: 420px; height: 420px;
+    opacity: .07;
+  }
+
+  /* ── Stat Cards ── */
+  .stat-strip { margin-top: -2.5rem; position: relative; z-index: 10; margin-bottom: 2.5rem; }
+  .stat-card {
+    background: var(--surface);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-md);
+    padding: 1.4rem 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    border: 1px solid var(--border);
+    height: 100%;
+    transition: transform .2s, box-shadow .2s;
+  }
+  .stat-card:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-lg);
+  }
+  .stat-icon {
+    width: 52px; height: 52px;
+    border-radius: var(--radius-sm);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.4rem;
+    flex-shrink: 0;
+  }
+  .stat-icon.blue  { background: #dbeafe; color: #2563eb; }
+  .stat-icon.green { background: #dcfce7; color: #16a34a; }
+  .stat-icon.amber { background: #fef3c7; color: #d97706; }
+  .stat-value {
+    font-family: 'Sora', sans-serif;
+    font-size: 1.65rem;
+    font-weight: 700;
+    line-height: 1;
+    color: var(--text-primary);
+  }
+  .stat-label {
+    font-size: 0.82rem;
+    color: var(--text-secondary);
+    margin-top: 3px;
+  }
+
+  /* ── Method Cards ── */
+  .section-label {
+    font-family: 'Sora', sans-serif;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    color: var(--primary);
+    margin-bottom: .5rem;
+  }
+  .section-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-bottom: 1.5rem;
+    color: var(--text-primary);
+  }
+  .method-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-sm);
+    padding: 1.75rem;
+    height: 100%;
+    transition: transform .2s, box-shadow .2s;
+    position: relative;
+    overflow: hidden;
+  }
+  .method-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--primary), var(--accent));
+  }
+  .method-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-md);
+  }
+  .method-icon {
+    width: 48px; height: 48px;
+    border-radius: var(--radius-sm);
+    background: var(--primary-light);
+    color: var(--primary);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.3rem;
+    margin-bottom: 1rem;
+  }
+  .method-card h5 {
+    font-size: 1.05rem;
+    font-weight: 700;
+    margin-bottom: .6rem;
+  }
+  .method-card p {
+    font-size: 0.88rem;
+    color: var(--text-secondary);
+    line-height: 1.65;
+    margin: 0;
+  }
+
+  /* ── Criteria table ── */
+  .criteria-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 0.78rem;
+    font-weight: 600;
+    padding: 4px 10px;
+    border-radius: 100px;
+  }
+  .criteria-badge.benefit { background: #dcfce7; color: #166534; }
+  .criteria-badge.cost    { background: #fee2e2; color: #991b1b; }
+
+  /* ── Flow Steps ── */
+  .flow-step {
+    display: flex;
+    gap: 1rem;
+    align-items: flex-start;
+    margin-bottom: 1.25rem;
+  }
+  .flow-num {
+    width: 34px; height: 34px;
+    border-radius: 50%;
+    background: var(--primary);
+    color: #fff;
+    font-family: 'Sora', sans-serif;
+    font-weight: 700;
+    font-size: 0.85rem;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .flow-step h6 { font-weight: 600; margin-bottom: 3px; font-size: 0.92rem; }
+  .flow-step p  { font-size: 0.84rem; color: var(--text-secondary); margin: 0; }
+</style>
+{% endblock %}
+
+{% block content %}
+
+<!-- ═══ Hero ═══ -->
+<section class="hero">
+  <!-- Decorative SVG bg -->
+  <svg class="hero-art" viewBox="0 0 420 420" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <circle cx="210" cy="210" r="200" stroke="white" stroke-width="2"/>
+    <circle cx="210" cy="210" r="140" stroke="white" stroke-width="2"/>
+    <circle cx="210" cy="210" r="80"  stroke="white" stroke-width="2"/>
+    <line x1="10"  y1="210" x2="410" y2="210" stroke="white" stroke-width="1"/>
+    <line x1="210" y1="10"  x2="210" y2="410" stroke="white" stroke-width="1"/>
+    <line x1="68"  y1="68"  x2="352" y2="352" stroke="white" stroke-width="1"/>
+    <line x1="352" y1="68"  x2="68"  y2="352" stroke="white" stroke-width="1"/>
+  </svg>
+
+  <div class="container hero-content">
+    <div class="hero-badge">
+      <i class="bi bi-cpu"></i>Sistem Pendukung Keputusan
+    </div>
+    <h1>
+      Penentuan Kelayakan<br>
+      <span>Pemberian Kredit Usaha Mikro</span>
+    </h1>
+    <p>
+      Platform cerdas berbasis metode <strong>AHP</strong> (Analytical Hierarchy Process)
+      dan <strong>SAW</strong> (Simple Additive Weighting) untuk mendukung keputusan
+      pemberian kredit yang objektif, transparan, dan akuntabel.
+    </p>
+    <div class="hero-actions">
+      <a href="{{ url_for('hasil') }}" class="btn-hero-primary">
+        <i class="bi bi-bar-chart-steps"></i>Lihat Hasil Perankingan
+      </a>
+      <a href="{{ url_for('data_nasabah') }}" class="btn-hero-secondary">
+        <i class="bi bi-people"></i>Kelola Data Nasabah
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ Stat Strip ═══ -->
+<div class="container stat-strip">
+  <div class="row g-3">
+    <div class="col-sm-6 col-lg-4">
+      <div class="stat-card">
+        <div class="stat-icon blue"><i class="bi bi-people-fill"></i></div>
+        <div>
+          <div class="stat-value">{{ total_nasabah }}</div>
+          <div class="stat-label">Total Nasabah Terdaftar</div>
+        </div>
+      </div>
+    </div>
+    <div class="col-sm-6 col-lg-4">
+      <div class="stat-card">
+        <div class="stat-icon green"><i class="bi bi-check2-circle"></i></div>
+        <div>
+          <div class="stat-value">4</div>
+          <div class="stat-label">Kriteria Penilaian</div>
+        </div>
+      </div>
+    </div>
+    <div class="col-sm-6 col-lg-4">
+      <div class="stat-card">
+        <div class="stat-icon amber"><i class="bi bi-diagram-3"></i></div>
+        <div>
+          <div class="stat-value">2</div>
+          <div class="stat-label">Metode SPK Digunakan</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ Method Cards ═══ -->
+<div class="container mb-5">
+  <div class="section-label">Metode Yang Digunakan</div>
+  <div class="section-title">Pendekatan Ilmiah &amp; Terstandarisasi</div>
+
+  <div class="row g-4">
+    <!-- AHP -->
+    <div class="col-md-6">
+      <div class="method-card">
+        <div class="method-icon"><i class="bi bi-diagram-3-fill"></i></div>
+        <h5>AHP — Analytical Hierarchy Process</h5>
+        <p>
+          Metode pengambilan keputusan multi-kriteria yang dikembangkan oleh Thomas L. Saaty.
+          AHP digunakan untuk <strong>menentukan bobot relatif</strong> setiap kriteria melalui
+          perbandingan berpasangan (pairwise comparison). Bobot dihasilkan dari eigenvector
+          matriks perbandingan dan diuji konsistensinya dengan <em>Consistency Ratio (CR)</em>.
+        </p>
+        <hr class="my-3" style="border-color: var(--border)">
+        <div class="row g-2 text-center">
+          <div class="col-3">
+            <div class="fw-700 text-primary-custom" style="font-family:'Sora',sans-serif;font-size:1rem;font-weight:700">21.8%</div>
+            <div style="font-size:.72rem;color:var(--text-muted)">Pendapatan</div>
+          </div>
+          <div class="col-3">
+            <div class="fw-700 text-primary-custom" style="font-family:'Sora',sans-serif;font-size:1rem;font-weight:700">53.1%</div>
+            <div style="font-size:.72rem;color:var(--text-muted)">Kredit History</div>
+          </div>
+          <div class="col-3">
+            <div class="fw-700 text-primary-custom" style="font-family:'Sora',sans-serif;font-size:1rem;font-weight:700">10.3%</div>
+            <div style="font-size:.72rem;color:var(--text-muted)">Pinjaman</div>
+          </div>
+          <div class="col-3">
+            <div class="fw-700 text-primary-custom" style="font-family:'Sora',sans-serif;font-size:1rem;font-weight:700">14.8%</div>
+            <div style="font-size:.72rem;color:var(--text-muted)">Tanggungan</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SAW -->
+    <div class="col-md-6">
+      <div class="method-card">
+        <div class="method-icon"><i class="bi bi-calculator-fill"></i></div>
+        <h5>SAW — Simple Additive Weighting</h5>
+        <p>
+          Metode penjumlahan berbobot yang menormalisasi nilai setiap alternatif berdasarkan
+          jenis kriteria. Kriteria <strong>benefit</strong> dinormalisasi dengan membagi nilai
+          terhadap nilai maksimum, sedangkan kriteria <strong>cost</strong> dinormalisasi
+          dengan membagi nilai minimum terhadap nilai. Skor akhir merupakan jumlah
+          perkalian nilai ternormalisasi dengan bobot AHP.
+        </p>
+        <hr class="my-3" style="border-color: var(--border)">
+        <div class="d-flex gap-2 flex-wrap">
+          <span class="criteria-badge benefit"><i class="bi bi-arrow-up-circle"></i>Benefit: X / Max</span>
+          <span class="criteria-badge cost"><i class="bi bi-arrow-down-circle"></i>Cost: Min / X</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ Criteria Table + Workflow ═══ -->
+<div class="container mb-5">
+  <div class="row g-4">
+    <!-- Criteria Table -->
+    <div class="col-lg-7">
+      <div class="card">
+        <div class="card-header-custom">
+          <h5><i class="bi bi-list-check me-2 text-primary-custom"></i>Kriteria Penilaian</h5>
+        </div>
+        <div class="p-0">
+          <table class="table-custom w-100">
+            <thead>
+              <tr>
+                <th>Kode</th>
+                <th>Kriteria</th>
+                <th>Atribut</th>
+                <th>Jenis</th>
+                <th>Bobot AHP</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code class="text-primary-custom fw-bold">K1</code></td>
+                <td>Total Pendapatan</td>
+                <td><small class="text-muted">applicant + coapplicant income</small></td>
+                <td><span class="criteria-badge benefit">Benefit</span></td>
+                <td><strong>0.2177</strong></td>
+              </tr>
+              <tr>
+                <td><code class="text-primary-custom fw-bold">K2</code></td>
+                <td>Riwayat Kredit</td>
+                <td><small class="text-muted">credit_history (0 atau 1)</small></td>
+                <td><span class="criteria-badge benefit">Benefit</span></td>
+                <td><strong>0.5308</strong></td>
+              </tr>
+              <tr>
+                <td><code class="text-primary-custom fw-bold">K3</code></td>
+                <td>Jumlah Pinjaman</td>
+                <td><small class="text-muted">loan_amount (juta rupiah)</small></td>
+                <td><span class="criteria-badge cost">Cost</span></td>
+                <td><strong>0.1035</strong></td>
+              </tr>
+              <tr>
+                <td><code class="text-primary-custom fw-bold">K4</code></td>
+                <td>Jumlah Tanggungan</td>
+                <td><small class="text-muted">dependents + 1</small></td>
+                <td><span class="criteria-badge cost">Cost</span></td>
+                <td><strong>0.1480</strong></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Workflow -->
+    <div class="col-lg-5">
+      <div class="card p-4 h-100">
+        <h5 class="mb-3" style="font-size:1rem;font-weight:700">
+          <i class="bi bi-arrow-right-circle me-2 text-primary-custom"></i>Alur Perhitungan SPK
+        </h5>
+        <div class="flow-step">
+          <div class="flow-num">1</div>
+          <div>
+            <h6>Input Data Nasabah</h6>
+            <p>Masukkan data pendapatan, riwayat kredit, jumlah pinjaman, dan tanggungan.</p>
+          </div>
+        </div>
+        <div class="flow-step">
+          <div class="flow-num">2</div>
+          <div>
+            <h6>Bobot AHP</h6>
+            <p>Terapkan bobot yang telah dihitung dari matriks perbandingan berpasangan.</p>
+          </div>
+        </div>
+        <div class="flow-step">
+          <div class="flow-num">3</div>
+          <div>
+            <h6>Normalisasi SAW</h6>
+            <p>Normalisasi matriks keputusan berdasarkan jenis kriteria (benefit/cost).</p>
+          </div>
+        </div>
+        <div class="flow-step" style="margin-bottom:0">
+          <div class="flow-num">4</div>
+          <div>
+            <h6>Perankingan</h6>
+            <p>Hitung skor akhir dan urutkan dari yang tertinggi sebagai kandidat layak kredit.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}

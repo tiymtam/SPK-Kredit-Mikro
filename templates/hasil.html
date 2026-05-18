@@ -1,0 +1,373 @@
+{% extends "base.html" %}
+{% block title %}Hasil Perankingan – SPK Kredit Usaha Mikro{% endblock %}
+
+{% block extra_head %}
+<style>
+  /* ── Score Badge ── */
+  .score-badge {
+    display: inline-block;
+    font-family: 'Sora', sans-serif;
+    font-weight: 700;
+    font-size: 0.85rem;
+    padding: 4px 12px;
+    border-radius: 100px;
+    letter-spacing: .02em;
+  }
+
+  /* Score gradient: green (high) → yellow → red (low) */
+  .score-high   { background: #dcfce7; color: #15803d; }
+  .score-mid    { background: #fef9c3; color: #a16207; }
+  .score-low    { background: #fee2e2; color: #b91c1c; }
+
+  /* ── Rank Medals ── */
+  .rank-cell {
+    font-family: 'Sora', sans-serif;
+    font-weight: 700;
+    font-size: 0.95rem;
+    display: flex; align-items: center; gap: 6px;
+    white-space: nowrap;
+  }
+  .medal { font-size: 1.1rem; }
+
+  /* ── Top-10 Card ── */
+  .top10-header {
+    background: linear-gradient(135deg, #1e40af 0%, #0ea5e9 100%);
+    color: #fff;
+    padding: 1.5rem;
+    border-radius: 12px 12px 0 0;
+    position: relative;
+    overflow: hidden;
+  }
+  .top10-header::after {
+    content:'';
+    position:absolute;
+    right:-30px; top:-30px;
+    width:200px; height:200px;
+    border-radius:50%;
+    background: rgba(255,255,255,.07);
+  }
+  .top10-header h5 {
+    margin:0;
+    font-family:'Sora',sans-serif;
+    font-size:1.05rem;
+    font-weight:700;
+  }
+  .top10-header p {
+    margin:4px 0 0;
+    font-size:.82rem;
+    opacity:.85;
+  }
+
+  /* ── Score Bar ── */
+  .score-bar-wrap {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-width: 150px;
+  }
+  .score-bar {
+    flex: 1;
+    height: 6px;
+    background: var(--border);
+    border-radius: 99px;
+    overflow: hidden;
+  }
+  .score-bar-fill {
+    height: 100%;
+    border-radius: 99px;
+    background: linear-gradient(90deg, var(--primary), var(--accent));
+    transition: width .6s ease;
+  }
+
+  /* ── Summary Stats ── */
+  .result-stat {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-sm);
+    padding: 1.25rem 1.4rem;
+    display: flex; align-items: center; gap: 1rem;
+  }
+  .result-stat .rs-icon {
+    width: 44px; height: 44px;
+    border-radius: var(--radius-sm);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.2rem;
+    flex-shrink: 0;
+  }
+  .rs-icon.blue  { background: #dbeafe; color: #2563eb; }
+  .rs-icon.green { background: #dcfce7; color: #16a34a; }
+  .rs-icon.gold  { background: #fef3c7; color: #d97706; }
+  .result-stat .rs-val {
+    font-family: 'Sora', sans-serif;
+    font-size: 1.4rem;
+    font-weight: 700;
+    line-height: 1;
+  }
+  .result-stat .rs-lbl {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    margin-top: 3px;
+  }
+
+  /* ── Criteria columns ── */
+  .norm-val {
+    font-size: 0.82rem;
+    color: var(--text-secondary);
+    font-family: 'Sora', sans-serif;
+  }
+
+  /* ── Rest table section ── */
+  .rest-header {
+    display: flex; align-items: center; gap: 8px;
+    margin: 2rem 0 .75rem;
+    color: var(--text-secondary);
+    font-size: 0.88rem;
+    font-weight: 600;
+  }
+  .rest-header::before, .rest-header::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  /* Eligible tag */
+  .eligible-tag {
+    font-size: 0.72rem;
+    font-weight: 700;
+    padding: 2px 9px;
+    border-radius: 100px;
+    background: #dcfce7;
+    color: #166534;
+    vertical-align: middle;
+    letter-spacing: .04em;
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+
+  <!-- Page Header -->
+  <div class="page-header">
+    <div class="breadcrumb-pill"><i class="bi bi-bar-chart-steps"></i>Hasil Analisis SPK</div>
+    <h1>Hasil Perankingan AHP-SAW</h1>
+    <p>Urutan kelayakan calon penerima kredit berdasarkan skor tertimbang metode AHP &amp; SAW.</p>
+  </div>
+
+  {% if not ranked %}
+  <!-- Empty state -->
+  <div class="card text-center p-5">
+    <i class="bi bi-inbox" style="font-size:3rem;color:var(--text-muted);opacity:.4"></i>
+    <p class="mt-3 text-muted">Belum ada data nasabah. Tambahkan data terlebih dahulu.</p>
+    <a href="{{ url_for('data_nasabah') }}" class="btn btn-primary mx-auto" style="width:fit-content">
+      <i class="bi bi-plus-lg me-1"></i>Tambah Data Nasabah
+    </a>
+  </div>
+
+  {% else %}
+
+  <!-- ── Summary Row ── -->
+  <div class="row g-3 mb-4">
+    <div class="col-sm-6 col-lg-4">
+      <div class="result-stat">
+        <div class="rs-icon blue"><i class="bi bi-people-fill"></i></div>
+        <div>
+          <div class="rs-val">{{ total }}</div>
+          <div class="rs-lbl">Total Nasabah Dianalisis</div>
+        </div>
+      </div>
+    </div>
+    <div class="col-sm-6 col-lg-4">
+      <div class="result-stat">
+        <div class="rs-icon gold"><i class="bi bi-trophy-fill"></i></div>
+        <div>
+          <div class="rs-val">{{ top10|length }}</div>
+          <div class="rs-lbl">Kandidat Terbaik (Top 10)</div>
+        </div>
+      </div>
+    </div>
+    <div class="col-sm-6 col-lg-4">
+      <div class="result-stat">
+        <div class="rs-icon green"><i class="bi bi-star-fill"></i></div>
+        <div>
+          <div class="rs-val">{{ "%.4f"|format(ranked[0].final_score) }}</div>
+          <div class="rs-lbl">Skor Tertinggi — {{ ranked[0].name }}</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════
+       TOP 10 CARD
+  ══════════════════════════════════════════════════ -->
+  <div class="card mb-4">
+    <div class="top10-header">
+      <h5><i class="bi bi-trophy-fill me-2"></i>Top {{ top10|length }} — Kandidat Paling Layak</h5>
+      <p>Nasabah dengan skor tertinggi berdasarkan kombinasi bobot AHP dan normalisasi SAW.</p>
+    </div>
+    <div class="table-responsive">
+      <table class="table-custom w-100">
+        <thead>
+          <tr>
+            <th>Rank</th>
+            <th>ID</th>
+            <th>Nama</th>
+            <th title="K1 Normalized">N.K1</th>
+            <th title="K2 Normalized">N.K2</th>
+            <th title="K3 Normalized">N.K3</th>
+            <th title="K4 Normalized">N.K4</th>
+            <th>Skor Akhir</th>
+            <th>Kelayakan</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for row in top10 %}
+          {% set score_pct = (row.final_score * 100) | round(1) %}
+          <tr>
+            <!-- Rank with medals -->
+            <td>
+              <div class="rank-cell">
+                {% if row.rank == 1 %}<span class="medal">🥇</span>
+                {% elif row.rank == 2 %}<span class="medal">🥈</span>
+                {% elif row.rank == 3 %}<span class="medal">🥉</span>
+                {% else %}<span style="color:var(--text-muted);font-size:.85rem">#{{ row.rank }}</span>
+                {% endif %}
+              </div>
+            </td>
+            <td>
+              <span style="font-family:'Sora',sans-serif;font-size:.78rem;font-weight:700;
+                           background:var(--primary-light);color:var(--primary);
+                           padding:3px 10px;border-radius:100px;">
+                {{ row.customer_id }}
+              </span>
+            </td>
+            <td style="font-weight:600">{{ row.name }}</td>
+            <td><span class="norm-val">{{ "%.4f"|format(row.N_K1) }}</span></td>
+            <td><span class="norm-val">{{ "%.4f"|format(row.N_K2) }}</span></td>
+            <td><span class="norm-val">{{ "%.4f"|format(row.N_K3) }}</span></td>
+            <td><span class="norm-val">{{ "%.4f"|format(row.N_K4) }}</span></td>
+            <td>
+              <div class="score-bar-wrap">
+                <div class="score-bar">
+                  <div class="score-bar-fill" style="width:{{ score_pct }}%"></div>
+                </div>
+                {% if row.final_score >= 0.5 %}
+                  <span class="score-badge score-high">{{ "%.4f"|format(row.final_score) }}</span>
+                {% elif row.final_score >= 0.3 %}
+                  <span class="score-badge score-mid">{{ "%.4f"|format(row.final_score) }}</span>
+                {% else %}
+                  <span class="score-badge score-low">{{ "%.4f"|format(row.final_score) }}</span>
+                {% endif %}
+              </div>
+            </td>
+            <td>
+              <span class="eligible-tag">✓ LAYAK</span>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════
+       REMAINING RANKINGS
+  ══════════════════════════════════════════════════ -->
+  {% if rest %}
+  <div class="rest-header">Peringkat {{ top10|length + 1 }} — {{ total }} (Selebihnya)</div>
+
+  <div class="card mb-5">
+    <div class="table-responsive">
+      <table class="table-custom w-100">
+        <thead>
+          <tr>
+            <th>Rank</th>
+            <th>ID</th>
+            <th>Nama</th>
+            <th>Total Pendapatan</th>
+            <th>Kredit History</th>
+            <th>Jml. Pinjaman</th>
+            <th>Tanggungan</th>
+            <th>N.K1</th>
+            <th>N.K2</th>
+            <th>N.K3</th>
+            <th>N.K4</th>
+            <th>Skor Akhir</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for row in rest %}
+          <tr>
+            <td style="color:var(--text-muted);font-size:.85rem;font-weight:600">#{{ row.rank }}</td>
+            <td>
+              <span style="font-family:'Sora',sans-serif;font-size:.78rem;font-weight:700;
+                           background:#f1f5f9;color:var(--text-secondary);
+                           padding:3px 10px;border-radius:100px;">
+                {{ row.customer_id }}
+              </span>
+            </td>
+            <td style="font-weight:500">{{ row.name }}</td>
+            <td style="font-size:.87rem">{{ "{:,.0f}".format(row.K1_raw) }}</td>
+            <td>
+              {% if row.credit_history == 1 %}
+                <span style="color:#16a34a;font-size:.82rem;font-weight:600">✓ Baik</span>
+              {% else %}
+                <span style="color:#dc2626;font-size:.82rem;font-weight:600">✗ Buruk</span>
+              {% endif %}
+            </td>
+            <td style="font-size:.87rem">{{ "{:,.0f}".format(row.loan_amount) }}</td>
+            <td style="font-size:.87rem">{{ row.dependents }}</td>
+            <td><span class="norm-val">{{ "%.4f"|format(row.N_K1) }}</span></td>
+            <td><span class="norm-val">{{ "%.4f"|format(row.N_K2) }}</span></td>
+            <td><span class="norm-val">{{ "%.4f"|format(row.N_K3) }}</span></td>
+            <td><span class="norm-val">{{ "%.4f"|format(row.N_K4) }}</span></td>
+            <td>
+              {% if row.final_score >= 0.5 %}
+                <span class="score-badge score-high">{{ "%.4f"|format(row.final_score) }}</span>
+              {% elif row.final_score >= 0.3 %}
+                <span class="score-badge score-mid">{{ "%.4f"|format(row.final_score) }}</span>
+              {% else %}
+                <span class="score-badge score-low">{{ "%.4f"|format(row.final_score) }}</span>
+              {% endif %}
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+  {% endif %}
+
+  <!-- ── Criteria Weight Reference ── -->
+  <div class="card mb-5 p-4">
+    <h6 class="mb-3" style="font-weight:700;font-size:.95rem">
+      <i class="bi bi-info-circle me-2 text-primary-custom"></i>Referensi Bobot Kriteria (AHP)
+    </h6>
+    <div class="row g-3">
+      {% for c in criteria_meta %}
+      <div class="col-sm-6 col-lg-3">
+        <div style="background:var(--surface-2);border:1px solid var(--border);
+                    border-radius:var(--radius-sm);padding:1rem;text-align:center;">
+          <div style="font-family:'Sora',sans-serif;font-weight:700;color:var(--primary);
+                      font-size:1.1rem;margin-bottom:4px">
+            {{ "%.1f"|format(c.weight * 100) }}%
+          </div>
+          <div style="font-size:.82rem;font-weight:600;margin-bottom:3px">{{ c.label }}</div>
+          <div style="font-size:.75rem;color:var(--text-muted)">
+            {% if c.type == 'benefit' %}
+              <span style="color:#16a34a">↑ Benefit</span>
+            {% else %}
+              <span style="color:#dc2626">↓ Cost</span>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+
+  {% endif %}
+</div>
+{% endblock %}
