@@ -71,9 +71,24 @@ def generate_customer_id():
 @app.route('/')
 def dashboard():
     """Landing / dashboard page."""
-    total_nasabah = Nasabah.query.count()
-    return render_template('dashboard.html', total_nasabah=total_nasabah)
+    nasabah_list = Nasabah.query.all()
+    total_nasabah = len(nasabah_list)
+    
+    # Menjalankan perhitungan SPK untuk ambil status layak/tidak
+    ranked = calculate_spk(nasabah_list)
+    total_layak = sum(1 for r in ranked if r['final_score'] >= 0.60)
+    total_tidak_layak = total_nasabah - total_layak
 
+    # Data tambahan untuk grafik Riwayat Kredit
+    kredit_baik = sum(1 for n in nasabah_list if n.credit_history == 1)
+    kredit_buruk = total_nasabah - kredit_baik
+
+    return render_template('dashboard.html', 
+                           total_nasabah=total_nasabah,
+                           total_layak=total_layak,
+                           total_tidak_layak=total_tidak_layak,
+                           kredit_baik=kredit_baik,
+                           kredit_buruk=kredit_buruk)
 
 @app.route('/nasabah')
 def data_nasabah():
@@ -151,6 +166,34 @@ def delete_nasabah(id):
     flash(f'Data nasabah "{name}" berhasil dihapus.', 'warning')
     return redirect(url_for('data_nasabah'))
 
+@app.route('/proses-ahp')
+def proses_ahp():
+    """Menampilkan matriks perbandingan berpasangan dan uji konsistensi kriteria."""
+    # Data Matriks Perbandingan Awal
+    matrix_data = [
+        {"kriteria": "Total Income (K1)", "k1": "1.0000", "k2": "0.2500", "k3": "3.0000", "k4": "2.0000"},
+        {"kriteria": "Riwayat Kredit (K2)", "k1": "4.0000", "k2": "1.0000", "k3": "6.0000", "k4": "4.0000"},
+        {"kriteria": "Jumlah Pinjaman (K3)", "k1": "0.3333", "k2": "0.1667", "k3": "1.0000", "k4": "0.5000"},
+        {"kriteria": "Jumlah Tanggungan (K4)", "k1": "0.5000", "k2": "0.2500", "k3": "2.0000", "k4": "1.0000"}
+    ]
+
+    # Data Matriks Normalisasi (Setiap sel dibagi total kolom)
+    norm_data = [
+        {"kriteria": "Total Income (K1)", "k1": "0.1714", "k2": "0.1500", "k3": "0.2500", "k4": "0.2667", "bobot": "21.77%"},
+        {"kriteria": "Riwayat Kredit (K2)", "k1": "0.6857", "k2": "0.6000", "k3": "0.5000", "k4": "0.5333", "bobot": "53.08%"},
+        {"kriteria": "Jumlah Pinjaman (K3)", "k1": "0.0571", "k2": "0.1000", "k3": "0.0833", "k4": "0.0667", "bobot": "10.35%"},
+        {"kriteria": "Jumlah Tanggungan (K4)", "k1": "0.0857", "k2": "0.1500", "k3": "0.1667", "k4": "0.1333", "bobot": "14.80%"}
+    ]
+    
+    # Nilai Konsistensi Kriteria
+    consistency = {
+        "lambda_max": 4.1517,
+        "ci": 0.0506,
+        "ri": 0.9000,
+        "cr": 0.0562  # CR < 0.1 (KONSISTEN)
+    }
+    
+    return render_template('proses_ahp.html', matrix=matrix_data, norm=norm_data, consistency=consistency)
 
 @app.route('/hasil')
 def hasil():

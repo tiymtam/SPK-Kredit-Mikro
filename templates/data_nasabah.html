@@ -22,8 +22,8 @@
     align-items: center;
     gap: 4px;
   }
-  .credit-good { background: #dcfce7; color: #15803d; }
-  .credit-bad  { background: #fee2e2; color: #b91c1c; }
+  .credit-good { background: #E8F5E9; color: #2E7D32; }
+  .credit-bad  { background: #FBEAEA; color: #C62828; }
 
   .action-btn {
     border: none;
@@ -38,19 +38,19 @@
   .action-btn.edit  { color: var(--primary); }
   .action-btn.edit:hover  { background: var(--primary-light); }
   .action-btn.del   { color: var(--danger);  }
-  .action-btn.del:hover   { background: #fee2e2; }
+  .action-btn.del:hover   { background: #FBEAEA; }
 
   /* Modal tweaks */
   .modal-header {
-    background: linear-gradient(135deg, var(--primary), var(--accent));
+    background: var(--primary);
     color: #fff;
     border-bottom: none;
-    border-radius: 12px 12px 0 0;
+    border-radius: 16px 16px 0 0;
     padding: 1.1rem 1.5rem;
   }
   .modal-header .btn-close { filter: invert(1); }
-  .modal-title { font-family: 'Sora', sans-serif; font-weight: 700; font-size: 1rem; }
-  .modal-content { border-radius: 12px; border: none; box-shadow: var(--shadow-lg); }
+  .modal-title { font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 700; font-size: 1rem; }
+  .modal-content { border-radius: 16px; border: none; box-shadow: var(--shadow-lg); }
   .modal-body { padding: 1.5rem; }
   .modal-footer { padding: .9rem 1.5rem; border-top: 1px solid var(--border); }
 
@@ -68,8 +68,8 @@
     transition: border-color .15s, box-shadow .15s;
   }
   .form-control:focus, .form-select:focus {
-    border-color: var(--primary);
-    box-shadow: 0 0 0 3px rgba(37,99,235,.12);
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(123, 170, 132, 0.15);
   }
   .input-group-text {
     background: var(--surface-2);
@@ -87,22 +87,53 @@
   .empty-state i { font-size: 3rem; margin-bottom: .75rem; display: block; opacity: .4; }
   .empty-state p { margin: 0; font-size: 0.9rem; }
 
-  /* Search box */
+  /* Search box & Pagination Toolbar */
+  .toolbar-wrapper {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 1rem 1.5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
   .search-box {
     position: relative;
-    max-width: 260px;
+    min-width: 260px;
   }
   .search-box i {
     position: absolute;
-    left: 11px; top: 50%;
+    left: 12px; top: 50%;
     transform: translateY(-50%);
     color: var(--text-muted);
     font-size: .9rem;
     pointer-events: none;
   }
   .search-box input {
-    padding-left: 32px;
+    padding-left: 36px;
     font-size: 0.875rem;
+    border-radius: 100px;
+  }
+  
+  /* Custom Pagination Colors */
+  .pagination .page-item.active .page-link {
+    background-color: var(--accent);
+    border-color: var(--accent);
+    color: #fff;
+  }
+  .pagination .page-link {
+    color: var(--primary);
+    font-weight: 600;
+    border-color: var(--border);
+  }
+  .pagination .page-link:hover {
+    background-color: var(--primary-light);
+    color: var(--primary);
+  }
+  .pagination .page-item.disabled .page-link {
+    color: var(--text-muted);
+    background-color: #fafafa;
   }
 </style>
 {% endblock %}
@@ -110,12 +141,11 @@
 {% block content %}
 <div class="container">
 
-  <!-- Page Header -->
   <div class="page-header d-flex align-items-start justify-content-between flex-wrap gap-3">
     <div>
       <div class="breadcrumb-pill"><i class="bi bi-people"></i>Manajemen Data</div>
       <h1>Data Nasabah</h1>
-      <p>Kelola data calon penerima kredit usaha mikro — tambah, edit, dan hapus.</p>
+      <p>Kelola data calon penerima kredit usaha mikro beserta kelengkapan finansialnya.</p>
     </div>
     <button class="btn btn-primary d-flex align-items-center gap-2"
             data-bs-toggle="modal" data-bs-target="#addModal">
@@ -123,24 +153,33 @@
     </button>
   </div>
 
-  <!-- Table Card -->
   <div class="card">
-    <!-- Card Header with search -->
     <div class="card-header-custom">
       <h5><i class="bi bi-table me-2 text-primary-custom"></i>
-        Daftar Nasabah
-        <span class="badge ms-1" style="background:var(--primary-light);color:var(--primary);font-size:.72rem;font-weight:700;border-radius:100px;padding:3px 10px;">
-          {{ nasabah_list|length }}
+        Daftar Nasabah Terdaftar
+        <span class="badge ms-2" style="background:var(--primary-light);color:var(--primary);font-size:.75rem;font-weight:700;border-radius:100px;padding:4px 12px;">
+          {{ nasabah_list|length }} Total
         </span>
       </h5>
+    </div>
+
+    <div class="toolbar-wrapper">
+      <div class="d-flex align-items-center gap-2" style="font-size: 0.85rem; color: var(--text-secondary); font-weight: 600;">
+        <span>Tampilkan</span>
+        <select id="pageSize" class="form-select form-select-sm" style="width: 80px; font-weight: 600;">
+          <option value="10">10</option>
+          <option value="25">25</option>
+          <option value="50">50</option>
+          <option value="100">100</option>
+        </select>
+        <span>data</span>
+      </div>
       <div class="search-box">
         <i class="bi bi-search"></i>
-        <input type="text" id="searchInput" class="form-control form-control-sm"
-               placeholder="Cari nasabah…">
+        <input type="text" id="searchInput" class="form-control form-control-sm" placeholder="Cari ID atau nama nasabah...">
       </div>
     </div>
 
-    <!-- Table -->
     <div class="table-responsive">
       {% if nasabah_list %}
       <table class="table-custom w-100" id="nasabahTable">
@@ -176,8 +215,7 @@
             </td>
             <td>{{ "{:,.0f}".format(n.loan_amount) }}</td>
             <td>{{ n.dependents }}</td>
-            <td style="text-align:center">
-              <!-- Edit trigger -->
+            <td style="text-align:center; white-space: nowrap;">
               <button class="action-btn edit"
                       title="Edit"
                       data-bs-toggle="modal"
@@ -192,7 +230,6 @@
                 <i class="bi bi-pencil-square"></i>
               </button>
 
-              <!-- Delete form -->
               <form action="{{ url_for('delete_nasabah', id=n.id) }}"
                     method="GET"
                     class="d-inline"
@@ -213,14 +250,18 @@
       </div>
       {% endif %}
     </div>
+
+    <div class="d-flex justify-content-between align-items-center px-4 py-3 border-top flex-wrap gap-3">
+      <div id="tableInfo" style="font-size: 0.85rem; color: var(--text-secondary); font-weight: 500;">
+        </div>
+      <div id="paginationControls">
+        </div>
+    </div>
   </div>
 
-</div><!-- /container -->
+</div>
 
 
-<!-- ══════════════════════════════════════════════════
-     MODAL: Tambah Nasabah
-══════════════════════════════════════════════════ -->
 <div class="modal fade" id="addModal" tabindex="-1">
   <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
     <div class="modal-content">
@@ -281,9 +322,6 @@
 </div>
 
 
-<!-- ══════════════════════════════════════════════════
-     MODAL: Edit Nasabah
-══════════════════════════════════════════════════ -->
 <div class="modal fade" id="editModal" tabindex="-1">
   <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
     <div class="modal-content">
@@ -347,7 +385,7 @@
 
 {% block extra_scripts %}
 <script>
-  /* ── Populate Edit Modal ── */
+  // Script untuk mengisi data pada form modal Edit
   document.getElementById('editModal').addEventListener('show.bs.modal', function (e) {
     const btn = e.relatedTarget;
     document.getElementById('editForm').action = `/nasabah/edit/${btn.dataset.id}`;
@@ -359,17 +397,113 @@
     document.getElementById('edit_dep').value         = btn.dataset.dep;
   });
 
-  /* ── Delete Confirmation ── */
+  // Konfirmasi sebelum menghapus data
   function confirmDelete(name) {
     return confirm(`Yakin ingin menghapus data nasabah "${name}"?\nTindakan ini tidak dapat dibatalkan.`);
   }
 
-  /* ── Live Search ── */
-  document.getElementById('searchInput').addEventListener('input', function () {
-    const q = this.value.toLowerCase();
-    document.querySelectorAll('#nasabahTable tbody tr').forEach(row => {
-      row.style.display = row.textContent.toLowerCase().includes(q) ? '' : 'none';
+  // SCRIPT PAGINATION & SEARCH
+  document.addEventListener("DOMContentLoaded", function () {
+    const table = document.getElementById("nasabahTable");
+    if (!table) return;
+
+    const tbody = table.querySelector("tbody");
+    const rows = Array.from(tbody.querySelectorAll("tr"));
+    const searchInput = document.getElementById("searchInput");
+    const pageSizeSelect = document.getElementById("pageSize");
+    const paginationControls = document.getElementById("paginationControls");
+    const tableInfo = document.getElementById("tableInfo");
+
+    let currentPage = 1;
+    let rowsPerPage = parseInt(pageSizeSelect.value);
+    let filteredRows = [...rows];
+
+    // Fungsi utama untuk menampilkan baris sesuai batasan halaman
+    function renderTable() {
+      rows.forEach(row => row.style.display = "none");
+
+      const start = (currentPage - 1) * rowsPerPage;
+      const end = start + rowsPerPage;
+      const paginatedRows = filteredRows.slice(start, end);
+
+      paginatedRows.forEach(row => row.style.display = "");
+
+      // Perbarui teks informasi di bawah tabel
+      let showingStart = filteredRows.length === 0 ? 0 : start + 1;
+      let showingEnd = Math.min(end, filteredRows.length);
+      tableInfo.innerHTML = `Menampilkan data ke-${showingStart} sampai ${showingEnd} dari ${filteredRows.length} data`;
+
+      renderPagination();
+    }
+
+    // Fungsi untuk merakit tombol halaman (1, 2, 3...)
+    function renderPagination() {
+      paginationControls.innerHTML = "";
+      const totalPages = Math.ceil(filteredRows.length / rowsPerPage);
+      if (totalPages <= 1) return;
+
+      const ul = document.createElement("ul");
+      ul.className = "pagination pagination-sm mb-0";
+
+      // Tombol Prev
+      let prevClass = currentPage === 1 ? "page-item disabled" : "page-item";
+      ul.insertAdjacentHTML('beforeend', `<li class="${prevClass}"><a class="page-link" href="#" data-page="${currentPage - 1}">Prev</a></li>`);
+
+      // Logika pembatasan jumlah tombol agar tidak terlalu panjang
+      let startPage = Math.max(1, currentPage - 2);
+      let endPage = Math.min(totalPages, currentPage + 2);
+
+      if (startPage > 1) {
+        ul.insertAdjacentHTML('beforeend', `<li class="page-item"><a class="page-link" href="#" data-page="1">1</a></li>`);
+        if (startPage > 2) ul.insertAdjacentHTML('beforeend', `<li class="page-item disabled"><span class="page-link">...</span></li>`);
+      }
+
+      for (let i = startPage; i <= endPage; i++) {
+        let activeClass = i === currentPage ? "active" : "";
+        ul.insertAdjacentHTML('beforeend', `<li class="page-item ${activeClass}"><a class="page-link" href="#" data-page="${i}">${i}</a></li>`);
+      }
+
+      if (endPage < totalPages) {
+        if (endPage < totalPages - 1) ul.insertAdjacentHTML('beforeend', `<li class="page-item disabled"><span class="page-link">...</span></li>`);
+        ul.insertAdjacentHTML('beforeend', `<li class="page-item"><a class="page-link" href="#" data-page="${totalPages}">${totalPages}</a></li>`);
+      }
+
+      // Tombol Next
+      let nextClass = currentPage === totalPages ? "page-item disabled" : "page-item";
+      ul.insertAdjacentHTML('beforeend', `<li class="${nextClass}"><a class="page-link" href="#" data-page="${currentPage + 1}">Next</a></li>`);
+
+      paginationControls.appendChild(ul);
+
+      // Berikan aksi klik untuk semua tombol yang baru dibuat
+      ul.querySelectorAll(".page-link").forEach(btn => {
+        btn.addEventListener("click", function(e) {
+          e.preventDefault();
+          const page = parseInt(this.getAttribute("data-page"));
+          if (!isNaN(page) && page !== currentPage) {
+            currentPage = page;
+            renderTable();
+          }
+        });
+      });
+    }
+
+    // Aksi ketika pengguna mengetik di kolom pencarian
+    searchInput.addEventListener("input", function() {
+      const query = this.value.toLowerCase();
+      filteredRows = rows.filter(row => row.textContent.toLowerCase().includes(query));
+      currentPage = 1; // Kembali ke halaman 1 saat pencarian
+      renderTable();
     });
+
+    // Aksi ketika pengguna mengubah pilihan jumlah data (10, 25, 50, 100)
+    pageSizeSelect.addEventListener("change", function() {
+      rowsPerPage = parseInt(this.value);
+      currentPage = 1; // Kembali ke halaman 1 saat mengubah kapasitas
+      renderTable();
+    });
+
+    // Jalankan saat pertama kali dimuat
+    renderTable();
   });
 </script>
 {% endblock %}

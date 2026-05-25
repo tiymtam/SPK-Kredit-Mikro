@@ -5,110 +5,112 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>{% block title %}SPK Kredit Usaha Mikro{% endblock %}</title>
 
-  <!-- Bootstrap 5 -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-  <!-- Bootstrap Icons -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
-  <!-- Google Fonts: Sora (display) + DM Sans (body) -->
-  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,400&display=swap" rel="stylesheet">
-
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
   <style>
-    /* ── Design Tokens ── */
+    /* ── Design Tokens (EARTHY MINIMALIST) ── */
     :root {
-      --primary:       #2563eb;
-      --primary-light: #dbeafe;
-      --primary-dark:  #1d4ed8;
-      --accent:        #0ea5e9;
-      --success:       #16a34a;
+      --primary:       #2D4336;  /* Dark Forest Green */
+      --primary-light: #EBF1ED;  /* Soft Green Background */
+      --primary-dark:  #1F2E25;
+      --accent:        #7BAA84;  /* Sage Green */
+      --success:       #7BAA84;
       --warning:       #d97706;
-      --danger:        #dc2626;
+      --danger:        #D47A7A;  /* Muted Red */
       --surface:       #ffffff;
-      --surface-2:     #f8fafc;
-      --border:        #e2e8f0;
-      --text-primary:  #0f172a;
-      --text-secondary:#475569;
+      --surface-2:     #FBFBF9;  /* Ivory / Putih Tulang */
+      --border:        #EAEAEA;
+      --text-primary:  #212121;
+      --text-secondary:#5C6B61;
       --text-muted:    #94a3b8;
-      --shadow-sm:     0 1px 3px rgba(15,23,42,.07), 0 1px 2px rgba(15,23,42,.05);
-      --shadow-md:     0 4px 12px rgba(15,23,42,.10), 0 2px 6px rgba(15,23,42,.06);
-      --shadow-lg:     0 12px 32px rgba(15,23,42,.14);
-      --radius:        12px;
+      --shadow-sm:     0 4px 12px rgba(45, 67, 54, 0.04);
+      --shadow-md:     0 8px 24px rgba(33, 33, 33, 0.06);
+      --shadow-lg:     0 12px 32px rgba(33, 33, 33, 0.08);
+      --radius:        16px;
       --radius-sm:     8px;
-      --navbar-h:      64px;
+      --navbar-h:      70px;
     }
 
     /* ── Reset & Base ── */
     *, *::before, *::after { box-sizing: border-box; }
     html { scroll-behavior: smooth; }
     body {
-      font-family: 'DM Sans', sans-serif;
+      font-family: 'Plus Jakarta Sans', sans-serif;
       background: var(--surface-2);
       color: var(--text-primary);
       min-height: 100vh;
       font-size: 0.9375rem;
       line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
     }
-    h1,h2,h3,h4,h5,h6,
-    .font-display { font-family: 'Sora', sans-serif; }
+    h1,h2,h3,h4,h5,h6, .font-display { 
+      font-family: 'Plus Jakarta Sans', sans-serif; 
+      letter-spacing: -0.3px;
+    }
 
     /* ── Navbar ── */
     .navbar {
       height: var(--navbar-h);
-      background: var(--surface) !important;
-      border-bottom: 1px solid var(--border);
+      background: var(--primary) !important;
       box-shadow: var(--shadow-sm);
+      padding: 1rem 0;
     }
     .navbar-brand {
-      font-family: 'Sora', sans-serif;
-      font-weight: 700;
-      font-size: 1.15rem;
-      color: var(--primary) !important;
+      font-weight: 800;
+      font-size: 1.2rem;
+      color: var(--surface-2) !important;
       display: flex;
       align-items: center;
       gap: 10px;
     }
     .brand-icon {
-      width: 36px; height: 36px;
-      background: linear-gradient(135deg, var(--primary), var(--accent));
+      width: 38px; height: 38px;
+      background: var(--accent);
       border-radius: var(--radius-sm);
       display: flex; align-items: center; justify-content: center;
-      color: #fff; font-size: 1rem;
+      color: #fff; font-size: 1.1rem;
       flex-shrink: 0;
     }
     .nav-link {
-      font-weight: 500;
-      color: var(--text-secondary) !important;
-      padding: 6px 14px !important;
+      font-weight: 600;
+      color: #C5D1C9 !important;
+      padding: 8px 16px !important;
       border-radius: var(--radius-sm);
-      transition: color .15s, background .15s;
-      font-size: 0.9rem;
+      transition: all 0.3s ease;
+      font-size: 0.95rem;
     }
     .nav-link:hover,
     .nav-link.active {
-      color: var(--primary) !important;
-      background: var(--primary-light);
+      color: var(--surface) !important;
+      background: rgba(255, 255, 255, 0.1);
     }
-    .nav-link i { margin-right: 5px; }
+    .nav-link i { margin-right: 6px; }
 
     /* ── Main Content ── */
     .main-content {
-      padding: 2rem 0 3rem;
+      padding: 2.5rem 0 4rem;
       min-height: calc(100vh - var(--navbar-h));
     }
 
     /* ── Page Header ── */
     .page-header {
-      margin-bottom: 1.75rem;
+      margin-bottom: 2rem;
+      position: relative;
     }
     .page-header h1 {
-      font-size: 1.65rem;
-      font-weight: 700;
-      color: var(--text-primary);
-      margin-bottom: 4px;
+      font-size: 1.8rem;
+      font-weight: 800;
+      color: var(--primary);
+      margin-bottom: 6px;
     }
     .page-header p {
       color: var(--text-secondary);
       margin: 0;
-      font-size: 0.9rem;
+      font-size: 0.95rem;
     }
     .breadcrumb-pill {
       display: inline-flex;
@@ -116,26 +118,31 @@
       gap: 6px;
       background: var(--primary-light);
       color: var(--primary);
-      font-size: 0.78rem;
-      font-weight: 600;
-      padding: 4px 12px;
+      font-size: 0.8rem;
+      font-weight: 700;
+      padding: 6px 14px;
       border-radius: 100px;
-      margin-bottom: 10px;
-      font-family: 'Sora', sans-serif;
-      letter-spacing: .02em;
+      margin-bottom: 12px;
+      letter-spacing: .03em;
       text-transform: uppercase;
     }
 
     /* ── Cards ── */
     .card {
       background: var(--surface);
-      border: 1px solid var(--border);
+      border: none;
       border-radius: var(--radius);
-      box-shadow: var(--shadow-sm);
+      box-shadow: var(--shadow-md);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    .card:hover {
+      box-shadow: var(--shadow-lg);
     }
     .card-header-custom {
-      padding: 1.1rem 1.4rem;
+      padding: 1.25rem 1.5rem;
+      background-color: var(--surface);
       border-bottom: 1px solid var(--border);
+      border-radius: var(--radius) var(--radius) 0 0 !important;
       display: flex;
       align-items: center;
       justify-content: space-between;
@@ -143,71 +150,86 @@
     }
     .card-header-custom h5 {
       margin: 0;
-      font-size: 1rem;
-      font-weight: 600;
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--primary);
     }
 
     /* ── Buttons ── */
-    .btn-primary {
-      background: var(--primary);
-      border-color: var(--primary);
-      font-weight: 500;
+    .btn {
+      border-radius: var(--radius-sm);
+      font-weight: 600;
+      padding: 0.5rem 1.2rem;
+      transition: all 0.2s ease;
     }
-    .btn-primary:hover { background: var(--primary-dark); border-color: var(--primary-dark); }
-    .btn-sm { font-size: 0.8125rem; }
+    .btn-primary {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: var(--surface);
+    }
+    .btn-primary:hover { 
+      background: #618E69; 
+      border-color: #618E69; 
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(123, 170, 132, 0.3);
+    }
+    .btn-sm { font-size: 0.85rem; padding: 0.4rem 0.8rem;}
 
     /* ── Tables ── */
     .table-custom {
       border-collapse: separate;
       border-spacing: 0;
       width: 100%;
+      margin-bottom: 0;
     }
     .table-custom thead th {
-      background: var(--surface-2);
-      color: var(--text-secondary);
-      font-size: 0.78rem;
-      font-weight: 600;
+      background: var(--primary-light);
+      color: var(--primary);
+      font-size: 0.8rem;
+      font-weight: 700;
       text-transform: uppercase;
-      letter-spacing: .06em;
-      padding: 10px 14px;
-      border-bottom: 2px solid var(--border);
+      letter-spacing: .05em;
+      padding: 14px 16px;
+      border-bottom: none;
       white-space: nowrap;
     }
     .table-custom tbody td {
-      padding: 11px 14px;
+      padding: 14px 16px;
       border-bottom: 1px solid var(--border);
-      font-size: 0.9rem;
+      font-size: 0.95rem;
       color: var(--text-primary);
       vertical-align: middle;
     }
     .table-custom tbody tr:last-child td { border-bottom: none; }
-    .table-custom tbody tr { transition: background .12s; }
-    .table-custom tbody tr:hover { background: #f0f7ff; }
+    .table-custom tbody tr { transition: background .15s; }
+    .table-custom tbody tr:hover { background: #F8FBF9; }
 
     /* ── Flash Messages ── */
-    .flash-container { margin-bottom: 1.25rem; }
+    .flash-container { margin-bottom: 1.5rem; }
     .alert {
       border-radius: var(--radius-sm);
       border: none;
-      font-size: 0.9rem;
-      font-weight: 500;
+      font-size: 0.95rem;
+      font-weight: 600;
+      box-shadow: var(--shadow-sm);
     }
 
     /* ── Footer ── */
     .footer {
       background: var(--surface);
       border-top: 1px solid var(--border);
-      padding: 1.25rem 0;
+      padding: 1.5rem 0;
       text-align: center;
       color: var(--text-muted);
-      font-size: 0.82rem;
+      font-size: 0.85rem;
+      font-weight: 500;
     }
 
     /* ── Scrollbar ── */
-    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar { width: 8px; height: 8px; }
     ::-webkit-scrollbar-track { background: var(--surface-2); }
-    ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 99px; }
-    ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+    ::-webkit-scrollbar-thumb { background: #C5D1C9; border-radius: 99px; }
+    ::-webkit-scrollbar-thumb:hover { background: var(--accent); }
 
     /* ── Utilities ── */
     .text-primary-custom { color: var(--primary) !important; }
@@ -218,37 +240,38 @@
 </head>
 <body>
 
-  <!-- ═══ Navbar ═══ -->
   <nav class="navbar navbar-expand-lg sticky-top">
     <div class="container">
       <a class="navbar-brand" href="{{ url_for('dashboard') }}">
-        <span class="brand-icon"><i class="bi bi-graph-up-arrow"></i></span>
+        <span class="brand-icon"><i class="bi bi-wallet-fill"></i></span>
         SPK Kredit Mikro
       </a>
 
       <button class="navbar-toggler border-0" type="button"
-              data-bs-toggle="collapse" data-bs-target="#navbarMain">
+              data-bs-toggle="collapse" data-bs-target="#navbarMain" style="filter: invert(1);">
         <span class="navbar-toggler-icon"></span>
       </button>
 
       <div class="collapse navbar-collapse" id="navbarMain">
-        <ul class="navbar-nav ms-auto align-items-lg-center gap-1">
+        <ul class="navbar-nav ms-auto align-items-lg-center gap-2">
           <li class="nav-item">
-            <a class="nav-link {% if request.endpoint == 'dashboard' %}active{% endif %}"
-               href="{{ url_for('dashboard') }}">
+            <a class="nav-link {% if request.endpoint == 'dashboard' %}active{% endif %}" href="{{ url_for('dashboard') }}">
               <i class="bi bi-house-door"></i>Dashboard
             </a>
           </li>
           <li class="nav-item">
-            <a class="nav-link {% if request.endpoint == 'data_nasabah' %}active{% endif %}"
-               href="{{ url_for('data_nasabah') }}">
+            <a class="nav-link {% if request.endpoint == 'data_nasabah' %}active{% endif %}" href="{{ url_for('data_nasabah') }}">
               <i class="bi bi-people"></i>Data Nasabah
             </a>
           </li>
           <li class="nav-item">
-            <a class="nav-link {% if request.endpoint == 'hasil' %}active{% endif %}"
-               href="{{ url_for('hasil') }}">
-              <i class="bi bi-bar-chart-steps"></i>Hasil Perankingan
+            <a class="nav-link {% if request.endpoint == 'proses_ahp' %}active{% endif %}" href="{{ url_for('proses_ahp') }}">
+              <i class="bi bi-calculator"></i>Proses AHP
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link {% if request.endpoint == 'hasil' %}active{% endif %}" href="{{ url_for('hasil') }}">
+              <i class="bi bi-award"></i>Hasil Perankingan
             </a>
           </li>
         </ul>
@@ -256,13 +279,12 @@
     </div>
   </nav>
 
-  <!-- ═══ Flash Messages ═══ -->
   {% with messages = get_flashed_messages(with_categories=true) %}
     {% if messages %}
-      <div class="container mt-3 flash-container">
+      <div class="container mt-4 flash-container">
         {% for category, message in messages %}
           <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
-            <i class="bi bi-{% if category == 'success' %}check-circle{% elif category == 'danger' %}exclamation-circle{% else %}exclamation-triangle{% endif %} me-2"></i>
+            <i class="bi bi-{% if category == 'success' %}check-circle-fill{% elif category == 'danger' %}exclamation-octagon-fill{% else %}exclamation-triangle-fill{% endif %} me-2"></i>
             {{ message }}
             <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
           </div>
@@ -271,22 +293,18 @@
     {% endif %}
   {% endwith %}
 
-  <!-- ═══ Main Content ═══ -->
   <main class="main-content">
     {% block content %}{% endblock %}
   </main>
 
-  <!-- ═══ Footer ═══ -->
   <footer class="footer">
     <div class="container">
       <span>
-        &copy; 2024 &nbsp;·&nbsp; SPK Kredit Usaha Mikro &nbsp;·&nbsp;
-        Metode <strong>AHP</strong> &amp; <strong>SAW</strong>
+        &copy; 2026 &nbsp;·&nbsp; Kelompok 3
       </span>
     </div>
   </footer>
 
-  <!-- Bootstrap 5 JS Bundle -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
   {% block extra_scripts %}{% endblock %}
 </body>

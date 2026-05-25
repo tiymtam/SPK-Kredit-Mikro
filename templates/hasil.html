@@ -3,10 +3,40 @@
 
 {% block extra_head %}
 <style>
+
+  /* Eligible tag (Vibes Riwayat Kredit) */
+  .eligible-tag {
+    font-size: 0.78rem;
+    font-weight: 700;
+    padding: 5px 14px;
+    border-radius: 100px;
+    background: #E8F5E9;
+    color: #2E7D32;
+    vertical-align: middle;
+    letter-spacing: .02em;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+  }
+
+  /* KODE BARU: Uneligible tag */
+  .uneligible-tag {
+    font-size: 0.78rem;
+    font-weight: 700;
+    padding: 5px 14px;
+    border-radius: 100px;
+    background: #FBEAEA;
+    color: var(--danger);
+    vertical-align: middle;
+    letter-spacing: .02em;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+  }
+
   /* ── Score Badge ── */
   .score-badge {
     display: inline-block;
-    font-family: 'Sora', sans-serif;
     font-weight: 700;
     font-size: 0.85rem;
     padding: 4px 12px;
@@ -14,27 +44,26 @@
     letter-spacing: .02em;
   }
 
-  /* Score gradient: green (high) → yellow → red (low) */
-  .score-high   { background: #dcfce7; color: #15803d; }
-  .score-mid    { background: #fef9c3; color: #a16207; }
-  .score-low    { background: #fee2e2; color: #b91c1c; }
+  /* Score gradient pakai warna Earthy */
+  .score-high   { background: #E8F2EA; color: var(--accent); } /* Sage Green */
+  .score-mid    { background: #FDF6E3; color: #B8860B; } /* Warm Gold */
+  .score-low    { background: #FBEAEA; color: var(--danger); } /* Muted Red */
 
   /* ── Rank Medals ── */
   .rank-cell {
-    font-family: 'Sora', sans-serif;
-    font-weight: 700;
-    font-size: 0.95rem;
+    font-weight: 800;
+    font-size: 1rem;
     display: flex; align-items: center; gap: 6px;
     white-space: nowrap;
   }
-  .medal { font-size: 1.1rem; }
+  .medal { font-size: 1.2rem; }
 
   /* ── Top-10 Card ── */
   .top10-header {
-    background: linear-gradient(135deg, #1e40af 0%, #0ea5e9 100%);
-    color: #fff;
-    padding: 1.5rem;
-    border-radius: 12px 12px 0 0;
+    background: var(--primary); /* Dark Forest Green */
+    color: #FBFBF9;
+    padding: 1.5rem 1.8rem;
+    border-radius: var(--radius) var(--radius) 0 0;
     position: relative;
     overflow: hidden;
   }
@@ -44,30 +73,31 @@
     right:-30px; top:-30px;
     width:200px; height:200px;
     border-radius:50%;
-    background: rgba(255,255,255,.07);
+    background: rgba(251,251,249,.05);
   }
   .top10-header h5 {
     margin:0;
-    font-family:'Sora',sans-serif;
-    font-size:1.05rem;
-    font-weight:700;
+    font-size:1.15rem;
+    font-weight:800;
+    color: var(--accent); /* Sage Green Text */
   }
   .top10-header p {
-    margin:4px 0 0;
-    font-size:.82rem;
-    opacity:.85;
+    margin:5px 0 0;
+    font-size:.85rem;
+    opacity:.9;
+    color: #C5D1C9;
   }
 
   /* ── Score Bar ── */
   .score-bar-wrap {
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 10px;
     min-width: 150px;
   }
   .score-bar {
     flex: 1;
-    height: 6px;
+    height: 8px;
     background: var(--border);
     border-radius: 99px;
     overflow: hidden;
@@ -75,74 +105,201 @@
   .score-bar-fill {
     height: 100%;
     border-radius: 99px;
-    background: linear-gradient(90deg, var(--primary), var(--accent));
+    background: var(--accent);
     transition: width .6s ease;
   }
 
   /* ── Summary Stats ── */
   .result-stat {
     background: var(--surface);
-    border: 1px solid var(--border);
+    border: none;
     border-radius: var(--radius);
-    box-shadow: var(--shadow-sm);
+    box-shadow: var(--shadow-md);
     padding: 1.25rem 1.4rem;
-    display: flex; align-items: center; gap: 1rem;
+    display: flex; align-items: center; gap: 1.2rem;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+  .result-stat:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-lg);
   }
   .result-stat .rs-icon {
-    width: 44px; height: 44px;
-    border-radius: var(--radius-sm);
+    width: 48px; height: 48px;
+    border-radius: 12px;
     display: flex; align-items: center; justify-content: center;
-    font-size: 1.2rem;
+    font-size: 1.3rem;
     flex-shrink: 0;
   }
-  .rs-icon.blue  { background: #dbeafe; color: #2563eb; }
-  .rs-icon.green { background: #dcfce7; color: #16a34a; }
-  .rs-icon.gold  { background: #fef3c7; color: #d97706; }
+  /* Ikon disamain sama tema Dashboard */
+  .rs-icon.blue  { background: var(--primary-light); color: var(--primary); }
+  .rs-icon.green { background: #E8F2EA; color: var(--accent); }
+  .rs-icon.gold  { background: #FDF6E3; color: #B8860B; }
+  
   .result-stat .rs-val {
-    font-family: 'Sora', sans-serif;
-    font-size: 1.4rem;
-    font-weight: 700;
-    line-height: 1;
+    font-size: 1.5rem;
+    font-weight: 800;
+    line-height: 1.1;
+    color: var(--primary);
   }
   .result-stat .rs-lbl {
-    font-size: 0.8rem;
+    font-size: 0.85rem;
     color: var(--text-secondary);
-    margin-top: 3px;
+    margin-top: 4px;
+    font-weight: 600;
   }
 
   /* ── Criteria columns ── */
   .norm-val {
-    font-size: 0.82rem;
+    font-size: 0.85rem;
     color: var(--text-secondary);
-    font-family: 'Sora', sans-serif;
+    font-weight: 600;
   }
 
   /* ── Rest table section ── */
   .rest-header {
-    display: flex; align-items: center; gap: 8px;
-    margin: 2rem 0 .75rem;
-    color: var(--text-secondary);
-    font-size: 0.88rem;
-    font-weight: 600;
+    display: flex; align-items: center; gap: 12px;
+    margin: 2.5rem 0 1.2rem;
+    color: var(--primary);
+    font-size: 0.95rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: .08em;
   }
   .rest-header::before, .rest-header::after {
     content: '';
     flex: 1;
-    height: 1px;
+    height: 2px;
     background: var(--border);
   }
 
   /* Eligible tag */
   .eligible-tag {
-    font-size: 0.72rem;
-    font-weight: 700;
-    padding: 2px 9px;
+    font-size: 0.75rem;
+    font-weight: 800;
+    padding: 5px 14px;
     border-radius: 100px;
-    background: #dcfce7;
-    color: #166534;
+    background: var(--accent); /* Pakai hijau sage solid */
+    color: #FFFFFF; /* Teks putih biar kontras banget */
     vertical-align: middle;
-    letter-spacing: .04em;
+    letter-spacing: .05em;
+    box-shadow: 0 2px 6px rgba(123, 170, 132, 0.4); /* Bayangan tipis biar tombolnya pop-up */
   }
+  
+  /* ── REST TABLE CONTROLS ── */
+.rest-controls {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 1rem;
+}
+.rest-search-wrap {
+  position: relative;
+  flex: 1;
+  min-width: 200px;
+}
+.rest-search-wrap i {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--text-muted);
+  font-size: 0.9rem;
+  pointer-events: none;
+}
+.rest-search {
+  width: 100%;
+  padding: 8px 12px 8px 36px;
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  color: var(--text-primary);
+  font-size: 0.875rem;
+  outline: none;
+  transition: border-color 0.2s;
+}
+.rest-search:focus { border-color: var(--accent); }
+
+.rest-per-page {
+  padding: 8px 12px;
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  color: var(--text-primary);
+  font-size: 0.875rem;
+  cursor: pointer;
+  outline: none;
+}
+.rest-per-page:focus { border-color: var(--accent); }
+
+.rest-info {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+
+/* ── PAGINATION ── */
+.pagination-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 10px;
+  padding: 1rem 1.2rem;
+  border-top: 1px solid var(--border);
+}
+.pagination {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.page-btn {
+  min-width: 32px;
+  height: 32px;
+  padding: 0 8px;
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  color: var(--text-secondary);
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.page-btn:hover:not(:disabled) {
+  background: var(--primary-light);
+  color: var(--primary);
+  border-color: var(--primary);
+}
+.page-btn.active {
+  background: var(--primary);
+  color: #fff;
+  border-color: var(--primary);
+}
+.page-btn:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+/* ── EMPTY STATE ── */
+.rest-empty {
+  text-align: center;
+  padding: 2.5rem 1rem;
+  color: var(--text-muted);
+  font-size: 0.9rem;
+}
+
+/* ── ROW HIGHLIGHT pada search ── */
+mark.search-hl {
+  background: #FFF3CD;
+  color: inherit;
+  border-radius: 2px;
+  padding: 0 2px;
+}
+  
 </style>
 {% endblock %}
 
@@ -204,7 +361,7 @@
   ══════════════════════════════════════════════════ -->
   <div class="card mb-4">
     <div class="top10-header">
-      <h5><i class="bi bi-trophy-fill me-2"></i>Top {{ top10|length }} — Kandidat Paling Layak</h5>
+      <h5><i class=""></i>Top {{ top10|length }} — Kandidat Paling Layak</h5>
       <p>Nasabah dengan skor tertinggi berdasarkan kombinasi bobot AHP dan normalisasi SAW.</p>
     </div>
     <div class="table-responsive">
@@ -263,7 +420,11 @@
               </div>
             </td>
             <td>
-              <span class="eligible-tag">✓ LAYAK</span>
+              {% if row.final_score >= 0.60 %}
+                <span class="eligible-tag"><i class="bi bi-check-circle-fill"></i> Layak</span>
+              {% else %}
+                <span class="uneligible-tag"><i class="bi bi-x-circle-fill"></i> Tidak Layak</span>
+              {% endif %}
             </td>
           </tr>
           {% endfor %}
@@ -279,8 +440,74 @@
   <div class="rest-header">Peringkat {{ top10|length + 1 }} — {{ total }} (Selebihnya)</div>
 
   <div class="card mb-5">
+
+    <!-- ── Controls Bar (Top) ── -->
+    <div style="
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 14px 18px;
+      border-bottom: 1px solid var(--border);
+      flex-wrap: wrap;
+    ">
+      <!-- Kiri: Tampilkan X data -->
+      <div style="display:flex;align-items:center;gap:8px;font-size:.875rem;color:var(--text-secondary);font-weight:500;">
+        <span>Tampilkan</span>
+        <select id="restPerPage" style="
+          padding: 6px 28px 6px 10px;
+          border: 1.5px solid var(--border);
+          border-radius: 8px;
+          background: var(--surface);
+          color: var(--text-primary);
+          font-size: .875rem;
+          font-weight: 600;
+          cursor: pointer;
+          outline: none;
+          appearance: none;
+          -webkit-appearance: none;
+          background-image: url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23888' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E\");
+          background-repeat: no-repeat;
+          background-position: right 8px center;
+          transition: border-color .2s;
+        ">
+          <option value="10">10</option>
+          <option value="25">25</option>
+          <option value="50">50</option>
+          <option value="100">100</option>
+        </select>
+        <span>data</span>
+      </div>
+
+      <!-- Kanan: Search -->
+      <div style="position:relative;min-width:260px;">
+        <i class="bi bi-search" style="
+          position:absolute;left:11px;top:50%;transform:translateY(-50%);
+          color:var(--text-muted);font-size:.85rem;pointer-events:none;
+        "></i>
+        <input
+          type="text"
+          id="restSearch"
+          placeholder="Cari ID atau nama nasabah..."
+          style="
+            width:100%;
+            padding: 7px 12px 7px 33px;
+            border: 1.5px solid var(--border);
+            border-radius: 100px;
+            background: var(--surface);
+            color: var(--text-primary);
+            font-size: .875rem;
+            outline: none;
+            transition: border-color .2s;
+            box-sizing: border-box;
+          "
+        >
+      </div>
+    </div>
+
+    <!-- ── Table ── -->
     <div class="table-responsive">
-      <table class="table-custom w-100">
+      <table class="table-custom w-100" id="restTable">
         <thead>
           <tr>
             <th>Rank</th>
@@ -290,39 +517,33 @@
             <th>Kredit History</th>
             <th>Jml. Pinjaman</th>
             <th>Tanggungan</th>
-            <th>N.K1</th>
-            <th>N.K2</th>
-            <th>N.K3</th>
-            <th>N.K4</th>
             <th>Skor Akhir</th>
+            <th style="text-align:center;">Kelayakan</th>
           </tr>
         </thead>
-        <tbody>
+        <tbody id="restTbody">
           {% for row in rest %}
-          <tr>
+          <tr
+            data-name="{{ row.name | lower }}"
+            data-id="{{ row.customer_id | lower }}"
+          >
             <td style="color:var(--text-muted);font-size:.85rem;font-weight:600">#{{ row.rank }}</td>
             <td>
-              <span style="font-family:'Sora',sans-serif;font-size:.78rem;font-weight:700;
-                           background:#f1f5f9;color:var(--text-secondary);
-                           padding:3px 10px;border-radius:100px;">
+              <span class="id-cell" style="font-family:'Sora',sans-serif;font-size:.78rem;font-weight:700;background:#E8F2EA;color:var(--primary);padding:3px 10px;border-radius:100px;">
                 {{ row.customer_id }}
               </span>
             </td>
-            <td style="font-weight:500">{{ row.name }}</td>
+            <td style="font-weight:600" class="name-cell">{{ row.name }}</td>
             <td style="font-size:.87rem">{{ "{:,.0f}".format(row.K1_raw) }}</td>
             <td>
               {% if row.credit_history == 1 %}
-                <span style="color:#16a34a;font-size:.82rem;font-weight:600">✓ Baik</span>
+                <span style="color:#2E7D32;font-size:.82rem;font-weight:600"><i class="bi bi-check-circle-fill"></i> Baik</span>
               {% else %}
-                <span style="color:#dc2626;font-size:.82rem;font-weight:600">✗ Buruk</span>
+                <span style="color:#C62828;font-size:.82rem;font-weight:600"><i class="bi bi-x-circle-fill"></i> Buruk</span>
               {% endif %}
             </td>
             <td style="font-size:.87rem">{{ "{:,.0f}".format(row.loan_amount) }}</td>
             <td style="font-size:.87rem">{{ row.dependents }}</td>
-            <td><span class="norm-val">{{ "%.4f"|format(row.N_K1) }}</span></td>
-            <td><span class="norm-val">{{ "%.4f"|format(row.N_K2) }}</span></td>
-            <td><span class="norm-val">{{ "%.4f"|format(row.N_K3) }}</span></td>
-            <td><span class="norm-val">{{ "%.4f"|format(row.N_K4) }}</span></td>
             <td>
               {% if row.final_score >= 0.5 %}
                 <span class="score-badge score-high">{{ "%.4f"|format(row.final_score) }}</span>
@@ -332,12 +553,221 @@
                 <span class="score-badge score-low">{{ "%.4f"|format(row.final_score) }}</span>
               {% endif %}
             </td>
+            <td style="text-align:center;">
+              {% if row.final_score >= 0.60 %}
+                <span class="eligible-tag"><i class="bi bi-check-circle-fill"></i> Layak</span>
+              {% else %}
+                <span class="uneligible-tag"><i class="bi bi-x-circle-fill"></i> Tidak Layak</span>
+              {% endif %}
+            </td>
           </tr>
           {% endfor %}
         </tbody>
       </table>
+
+      <!-- Empty state -->
+      <div id="restEmpty" style="display:none;text-align:center;padding:2.5rem 1rem;color:var(--text-muted);font-size:.9rem;">
+        <i class="bi bi-search" style="font-size:2rem;opacity:.25;display:block;margin-bottom:.6rem"></i>
+        Tidak ada nasabah yang cocok dengan pencarian.
+      </div>
+    </div>
+
+    <!-- ── Footer Bar (Pagination) ── -->
+    <div style="
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 12px 18px;
+      border-top: 1px solid var(--border);
+      flex-wrap: wrap;
+    ">
+      <!-- Kiri: info teks -->
+      <span id="restInfo" style="font-size:.82rem;color:var(--text-muted);font-weight:500;"></span>
+
+      <!-- Kanan: tombol pagination -->
+      <div id="restPageBtns" style="display:flex;align-items:center;gap:4px;"></div>
     </div>
   </div>
+
+  <style>
+    #restSearch:focus,
+    #restPerPage:focus { border-color: var(--accent); }
+
+    .r-page-btn {
+      min-width: 34px;
+      height: 34px;
+      padding: 0 8px;
+      border: 1.5px solid var(--border);
+      border-radius: 8px;
+      background: var(--surface);
+      color: var(--text-secondary);
+      font-size: .82rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all .18s;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      line-height: 1;
+    }
+    .r-page-btn:hover:not(:disabled):not(.r-page-active) {
+      background: var(--primary-light);
+      color: var(--primary);
+      border-color: var(--primary);
+    }
+    .r-page-btn.r-page-active {
+      background: var(--accent);
+      color: #fff;
+      border-color: var(--accent);
+      cursor: default;
+    }
+    .r-page-btn:disabled {
+      opacity: .32;
+      cursor: not-allowed;
+    }
+    .r-page-dots {
+      font-size: .82rem;
+      color: var(--text-muted);
+      padding: 0 2px;
+      user-select: none;
+    }
+    mark.hl {
+      background: #FFF3CD;
+      color: inherit;
+      border-radius: 2px;
+      padding: 0 2px;
+    }
+  </style>
+
+  <script>
+  (function () {
+    const tbody    = document.getElementById('restTbody');
+    const searchEl = document.getElementById('restSearch');
+    const perPageEl= document.getElementById('restPerPage');
+    const infoEl   = document.getElementById('restInfo');
+    const pageBtns = document.getElementById('restPageBtns');
+    const emptyEl  = document.getElementById('restEmpty');
+
+    const allRows  = Array.from(tbody.querySelectorAll('tr'));
+
+    /* simpan teks asli biar highlight bisa di-reset */
+    allRows.forEach(r => {
+      const nc = r.querySelector('.name-cell');
+      const ic = r.querySelector('.id-cell');
+      if (nc) nc.dataset.orig = nc.textContent.trim();
+      if (ic) ic.dataset.orig = ic.textContent.trim();
+    });
+
+    let filtered = [...allRows];
+    let page     = 1;
+
+    function esc(s) { return s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); }
+
+    function applyFilter() {
+      const q = searchEl.value.trim().toLowerCase();
+
+      /* reset semua highlight */
+      allRows.forEach(r => {
+        const nc = r.querySelector('.name-cell');
+        const ic = r.querySelector('.id-cell');
+        if (nc) nc.innerHTML = nc.dataset.orig;
+        if (ic) ic.innerHTML = ic.dataset.orig;
+      });
+
+      filtered = allRows.filter(r =>
+        !q || r.dataset.name.includes(q) || r.dataset.id.includes(q)
+      );
+
+      if (q) {
+        const re = new RegExp('(' + esc(q) + ')', 'gi');
+        filtered.forEach(r => {
+          const nc = r.querySelector('.name-cell');
+          const ic = r.querySelector('.id-cell');
+          if (nc) nc.innerHTML = (nc.dataset.orig).replace(re, '<mark class="hl">$1</mark>');
+          if (ic) ic.innerHTML = (ic.dataset.orig).replace(re, '<mark class="hl">$1</mark>');
+        });
+      }
+
+      page = 1;
+      render();
+    }
+
+    function render() {
+      const pp     = parseInt(perPageEl.value, 10);
+      const total  = filtered.length;
+      const pages  = Math.max(1, Math.ceil(total / pp));
+      if (page > pages) page = pages;
+
+      const start = (page - 1) * pp;
+      const end   = start + pp;
+
+      allRows.forEach(r => (r.style.display = 'none'));
+      filtered.slice(start, end).forEach(r => (r.style.display = ''));
+
+      /* empty state */
+      const isEmpty = total === 0;
+      emptyEl.style.display  = isEmpty ? '' : 'none';
+      tbody.style.visibility = isEmpty ? 'hidden' : '';
+
+      /* info teks — format referensi: "Menampilkan data ke-X sampai Y dari Z data" */
+      const from = isEmpty ? 0 : start + 1;
+      const to   = Math.min(end, total);
+      infoEl.textContent = isEmpty
+        ? 'Tidak ada hasil ditemukan'
+        : `Menampilkan data ke-${from} sampai ${to} dari ${total} data`;
+
+      buildPagination(pages);
+    }
+
+    function buildPagination(pages) {
+      pageBtns.innerHTML = '';
+      if (pages <= 1) return;
+
+      function btn(label, targetPage, isActive, isDisabled) {
+        const b = document.createElement('button');
+        b.className = 'r-page-btn' + (isActive ? ' r-page-active' : '');
+        b.disabled  = isDisabled;
+        b.innerHTML = label;
+        if (!isDisabled && !isActive) {
+          b.addEventListener('click', () => { page = targetPage; render(); });
+        }
+        return b;
+      }
+
+      function dots() {
+        const s = document.createElement('span');
+        s.className   = 'r-page-dots';
+        s.textContent = '...';
+        return s;
+      }
+
+      /* Prev */
+      pageBtns.appendChild(btn('Prev', page - 1, false, page === 1));
+
+      /* Nomor halaman: selalu tampil 1, last, dan window ±1 dari current */
+      const show = new Set();
+      show.add(1);
+      show.add(pages);
+      for (let i = Math.max(1, page - 1); i <= Math.min(pages, page + 1); i++) show.add(i);
+
+      let prev = 0;
+      Array.from(show).sort((a,b) => a-b).forEach(i => {
+        if (i - prev > 1) pageBtns.appendChild(dots());
+        pageBtns.appendChild(btn(i, i, i === page, false));
+        prev = i;
+      });
+
+      /* Next */
+      pageBtns.appendChild(btn('Next', page + 1, false, page === pages));
+    }
+
+    searchEl.addEventListener('input', applyFilter);
+    perPageEl.addEventListener('change', () => { page = 1; render(); });
+
+    render();
+  })();
+  </script>
   {% endif %}
 
   <!-- ── Criteria Weight Reference ── -->
