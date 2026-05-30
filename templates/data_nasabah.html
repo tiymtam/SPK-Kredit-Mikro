@@ -385,7 +385,6 @@
 
 {% block extra_scripts %}
 <script>
-  // Script untuk mengisi data pada form modal Edit
   document.getElementById('editModal').addEventListener('show.bs.modal', function (e) {
     const btn = e.relatedTarget;
     document.getElementById('editForm').action = `/nasabah/edit/${btn.dataset.id}`;
@@ -397,12 +396,11 @@
     document.getElementById('edit_dep').value         = btn.dataset.dep;
   });
 
-  // Konfirmasi sebelum menghapus data
   function confirmDelete(name) {
     return confirm(`Yakin ingin menghapus data nasabah "${name}"?\nTindakan ini tidak dapat dibatalkan.`);
   }
 
-  // SCRIPT PAGINATION & SEARCH
+  // PAGINATION & SEARCH
   document.addEventListener("DOMContentLoaded", function () {
     const table = document.getElementById("nasabahTable");
     if (!table) return;
@@ -418,7 +416,7 @@
     let rowsPerPage = parseInt(pageSizeSelect.value);
     let filteredRows = [...rows];
 
-    // Fungsi utama untuk menampilkan baris sesuai batasan halaman
+    // Menampilkan baris sesuai batasan halaman
     function renderTable() {
       rows.forEach(row => row.style.display = "none");
 
@@ -436,7 +434,7 @@
       renderPagination();
     }
 
-    // Fungsi untuk merakit tombol halaman (1, 2, 3...)
+    // Pagination
     function renderPagination() {
       paginationControls.innerHTML = "";
       const totalPages = Math.ceil(filteredRows.length / rowsPerPage);
@@ -449,7 +447,7 @@
       let prevClass = currentPage === 1 ? "page-item disabled" : "page-item";
       ul.insertAdjacentHTML('beforeend', `<li class="${prevClass}"><a class="page-link" href="#" data-page="${currentPage - 1}">Prev</a></li>`);
 
-      // Logika pembatasan jumlah tombol agar tidak terlalu panjang
+      // Logika pembatasan jumlah tombol
       let startPage = Math.max(1, currentPage - 2);
       let endPage = Math.min(totalPages, currentPage + 2);
 
@@ -474,7 +472,6 @@
 
       paginationControls.appendChild(ul);
 
-      // Berikan aksi klik untuk semua tombol yang baru dibuat
       ul.querySelectorAll(".page-link").forEach(btn => {
         btn.addEventListener("click", function(e) {
           e.preventDefault();
