@@ -4,7 +4,7 @@
 {% block extra_head %}
 <style>
 
-  /* Eligible tag (Vibes Riwayat Kredit) */
+  /* Eligible tag */
   .eligible-tag {
     font-size: 0.78rem;
     font-weight: 700;
@@ -19,7 +19,7 @@
     gap: 5px;
   }
 
-  /* KODE BARU: Uneligible tag */
+  /* Uneligible tag */
   .uneligible-tag {
     font-size: 0.78rem;
     font-weight: 700;
@@ -44,7 +44,6 @@
     letter-spacing: .02em;
   }
 
-  /* Score gradient pakai warna Earthy */
   .score-high   { background: #E8F2EA; color: var(--accent); } /* Sage Green */
   .score-mid    { background: #FDF6E3; color: #B8860B; } /* Warm Gold */
   .score-low    { background: #FBEAEA; color: var(--danger); } /* Muted Red */
@@ -130,7 +129,6 @@
     font-size: 1.3rem;
     flex-shrink: 0;
   }
-  /* Ikon disamain sama tema Dashboard */
   .rs-icon.blue  { background: var(--primary-light); color: var(--primary); }
   .rs-icon.green { background: #E8F2EA; color: var(--accent); }
   .rs-icon.gold  { background: #FDF6E3; color: #B8860B; }
@@ -178,11 +176,11 @@
     font-weight: 800;
     padding: 5px 14px;
     border-radius: 100px;
-    background: var(--accent); /* Pakai hijau sage solid */
-    color: #FFFFFF; /* Teks putih biar kontras banget */
+    background: var(--accent); 
+    color: #FFFFFF;
     vertical-align: middle;
     letter-spacing: .05em;
-    box-shadow: 0 2px 6px rgba(123, 170, 132, 0.4); /* Bayangan tipis biar tombolnya pop-up */
+    box-shadow: 0 2px 6px rgba(123, 170, 132, 0.4); 
   }
   
   /* ── REST TABLE CONTROLS ── */
@@ -292,7 +290,7 @@
   font-size: 0.9rem;
 }
 
-/* ── ROW HIGHLIGHT pada search ── */
+/* ── ROW HIGHLIGHT ── */
 mark.search-hl {
   background: #FFF3CD;
   color: inherit;
@@ -651,7 +649,6 @@ mark.search-hl {
 
     const allRows  = Array.from(tbody.querySelectorAll('tr'));
 
-    /* simpan teks asli biar highlight bisa di-reset */
     allRows.forEach(r => {
       const nc = r.querySelector('.name-cell');
       const ic = r.querySelector('.id-cell');
@@ -667,7 +664,6 @@ mark.search-hl {
     function applyFilter() {
       const q = searchEl.value.trim().toLowerCase();
 
-      /* reset semua highlight */
       allRows.forEach(r => {
         const nc = r.querySelector('.name-cell');
         const ic = r.querySelector('.id-cell');
@@ -710,7 +706,7 @@ mark.search-hl {
       emptyEl.style.display  = isEmpty ? '' : 'none';
       tbody.style.visibility = isEmpty ? 'hidden' : '';
 
-      /* info teks — format referensi: "Menampilkan data ke-X sampai Y dari Z data" */
+      /* info teks "Menampilkan data ke-X sampai Y dari Z data" */
       const from = isEmpty ? 0 : start + 1;
       const to   = Math.min(end, total);
       infoEl.textContent = isEmpty
